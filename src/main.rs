@@ -1,3 +1,6 @@
 fn main() {
-    println!("Hello, world!");
+    if let Err(e) = catr::run() {
+        eprint!("{}", e);
+        std::process::exit(1);
+    }
 }
