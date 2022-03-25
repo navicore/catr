@@ -15,34 +15,30 @@ pub fn get_args() -> MyResult<Config> {
         .about("Rust cat")
         .arg(
             Arg::with_name("files")
-                .value_name("FILES")
+                .value_name("FILE")
                 .help("Input files")
-                .required(true)
-                .multiple(true)
-                .min_values(1),
+                .default_value("-")
+                .multiple(true),
         )
         .arg(
-            Arg::with_name("number_nonblank_lines")
+            Arg::with_name("number_nonblank")
                 .short("b")
                 .help("Number nonblank lines")
                 .takes_value(false),
         )
         .arg(
-            Arg::with_name("number_lines")
+            Arg::with_name("number")
                 .short("n")
                 .help("Number lines")
-                .takes_value(false),
+                .takes_value(false)
+                .conflicts_with("number_nonblank"),
         )
         .get_matches();
 
-    let sfiles: Vec<&str> = matches.values_of("files").unwrap().collect();
-    let files: Vec<String> = sfiles.iter().map(|s| s.to_string()).collect();
-    let number_lines = matches.is_present("number_lines");
-    let number_nonblank_lines = matches.is_present("number_nonblank_lines");
     Ok(Config {
-        files,
-        number_lines,
-        number_nonblank_lines,
+        files: matches.values_of_lossy("files").unwrap(),
+        number_lines: matches.is_present("number"),
+        number_nonblank_lines: matches.is_present("number_nonblank"),
     })
 }
 
