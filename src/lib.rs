@@ -65,12 +65,15 @@ pub fn run(config: Config) -> MyResult<()> {
                     match line {
                         Err(err) => eprintln!("Failed to print line: {}", err),
                         Ok(l) => {
-                            if config.number_nonblank_lines && l.trim().is_empty() {
-                                continue;
-                            };
-                            number = number + 1;
+                            if config.number_lines
+                                || (config.number_nonblank_lines && !l.trim().is_empty())
+                            {
+                                number = number + 1;
+                            }
                             let mut number_str = String::from("");
-                            if config.number_lines || config.number_nonblank_lines {
+                            if config.number_lines
+                                || (config.number_nonblank_lines && !l.trim().is_empty())
+                            {
                                 number_str = format!("     {}\t", number.to_string());
                             };
                             println!("{}{}", number_str, l)
