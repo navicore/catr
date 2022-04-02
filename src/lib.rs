@@ -30,7 +30,8 @@ pub fn get_args() -> MyResult<Config> {
                 .multiple(true),
         )
         .arg(
-            Arg::with_name("number_nonblank")
+            Arg::with_name("number-nonblank")
+                .long("number-nonblank")
                 .short("b")
                 .help("Number nonblank lines")
                 .takes_value(false),
@@ -38,16 +39,17 @@ pub fn get_args() -> MyResult<Config> {
         .arg(
             Arg::with_name("number")
                 .short("n")
+                .long("number")
                 .help("Number lines")
                 .takes_value(false)
-                .conflicts_with("number_nonblank"),
+                .conflicts_with("number-nonblank"),
         )
         .get_matches();
 
     Ok(Config {
         files: matches.values_of_lossy("files").unwrap(),
         number_lines: matches.is_present("number"),
-        number_nonblank_lines: matches.is_present("number_nonblank"),
+        number_nonblank_lines: matches.is_present("number-nonblank"),
     })
 }
 
@@ -63,14 +65,13 @@ pub fn run(config: Config) -> MyResult<()> {
                     match line {
                         Err(err) => eprintln!("Failed to print line: {}", err),
                         Ok(l) => {
-                            if config.number_nonblank_lines && l.is_empty() {
+                            if config.number_nonblank_lines && l.trim().is_empty() {
                                 continue;
                             };
                             number = number + 1;
                             let mut number_str = String::from("");
                             if config.number_lines || config.number_nonblank_lines {
-                                number_str = number.to_string();
-                                number_str.push(' ');
+                                number_str = format!("     {}\t", number.to_string());
                             };
                             println!("{}{}", number_str, l)
                         }
