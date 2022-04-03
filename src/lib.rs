@@ -56,11 +56,11 @@ pub fn get_args() -> MyResult<Config> {
 type MyResult<T> = Result<T, Box<dyn Error>>;
 
 pub fn run(config: Config) -> MyResult<()> {
+    let mut number = 0;
     for filename in config.files {
         match open(&filename) {
             Err(err) => eprintln!("Failed to print {}: {}", filename, err),
             Ok(f) => {
-                let mut number = 0;
                 for line in f.lines() {
                     match line {
                         Err(err) => eprintln!("Failed to print line: {}", err),
@@ -69,14 +69,10 @@ pub fn run(config: Config) -> MyResult<()> {
                                 || (config.number_nonblank_lines && !l.trim().is_empty())
                             {
                                 number = number + 1;
+                                println!("{:>6}\t{}", number.to_string(), l);
+                            } else {
+                                println!("{}", l);
                             }
-                            let mut number_str = String::from("");
-                            if config.number_lines
-                                || (config.number_nonblank_lines && !l.trim().is_empty())
-                            {
-                                number_str = format!("     {}\t", number.to_string());
-                            };
-                            println!("{}{}", number_str, l)
                         }
                     }
                 }
