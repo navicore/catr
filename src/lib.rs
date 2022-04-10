@@ -56,24 +56,20 @@ pub fn get_args() -> MyResult<Config> {
 type MyResult<T> = Result<T, Box<dyn Error>>;
 
 pub fn run(config: Config) -> MyResult<()> {
-    let mut number = 0;
+    let mut last_num = 0;
     for filename in config.files {
         match open(&filename) {
-            Err(err) => eprintln!("Failed to print {}: {}", filename, err),
+            Err(err) => eprintln!("{}: {}", filename, err),
             Ok(f) => {
-                for line in f.lines() {
-                    match line {
-                        Err(err) => eprintln!("Failed to print line: {}", err),
-                        Ok(l) => {
-                            if config.number_lines
-                                || (config.number_nonblank_lines && !l.trim().is_empty())
-                            {
-                                number = number + 1;
-                                println!("{:>6}\t{}", number.to_string(), l);
-                            } else {
-                                println!("{}", l);
-                            }
-                        }
+                for line_result in f.lines() {
+                    let line = line_result?;
+                    if config.number_lines
+                        || (config.number_nonblank_lines && !line.trim().is_empty())
+                    {
+                        last_num += 1;
+                        println!("{:>6}\t{}", last_num, line);
+                    } else {
+                        println!("{}", line);
                     }
                 }
             }
