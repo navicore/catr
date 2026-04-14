@@ -11,4 +11,4 @@ clap = "2.34"
 [dev-dependencies]
 assert_cmd = "2"
 predicates = "2"
-rand = "0.8"
+rand = "0.9"
